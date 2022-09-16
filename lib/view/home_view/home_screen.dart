@@ -11,20 +11,20 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WeatherViewModel weatherViewModel = context.watch<WeatherViewModel>();
     return Scaffold(
       body: Container(
-        child: _child(weatherViewModel),
+        child: _child(context),
       ),
     );
   }
 
-  _child(WeatherViewModel weatherViewModel) {
-    if (weatherViewModel.onLoading) {
+  _child(BuildContext context) {
+    if (context.select((WeatherViewModel weatherVM) => weatherVM.onLoading)) {
       return const HomeLoadingView();
     }
 
-    if (weatherViewModel.userError != null) {
+    if (context.select((WeatherViewModel weatherVM) => weatherVM.userError) !=
+        null) {
       return const HomeErrorView();
     }
 

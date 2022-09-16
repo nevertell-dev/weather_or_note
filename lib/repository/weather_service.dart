@@ -14,7 +14,7 @@ class WeatherService {
       var response = await http.get(url);
 
       if (response.statusCode == 200) {
-        return Success("200", weatherFromJson(response.body));
+        return Success("200", forecastFromJson(response.body));
       }
 
       return Failure("100", 'invalid response');

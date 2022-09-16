@@ -38,7 +38,7 @@ class WeatherPanel extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Selector<WeatherViewModel, Data?>(
-                  selector: (_, weatherVM) => weatherVM.selectedTime,
+                  selector: (_, weatherVM) => weatherVM.activeData,
                   builder: (context, selectedTime, child) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -46,7 +46,7 @@ class WeatherPanel extends StatelessWidget {
                         FittedBox(
                           child: Text(
                             context.select((WeatherViewModel weatherVM) =>
-                                    weatherVM.weathers?.city.name) ??
+                                    weatherVM.forecast?.city.name) ??
                                 '',
                             textAlign: TextAlign.center,
                             style: theme.textTheme.headline1?.copyWith(
@@ -56,7 +56,7 @@ class WeatherPanel extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          selectedTime?.weather[0].description ?? '',
+                          selectedTime?.weathers[0].description ?? '',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: theme.colorScheme.background,
@@ -95,7 +95,7 @@ class ControlPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = context.watch<WeatherViewModel>().weathers!.datas[0].dt;
+    final date = context.watch<WeatherViewModel>().forecast!.datas[0].dt;
     return Container(
       color: Theme.of(context).colorScheme.background,
       padding: const EdgeInsets.all(16.0),
@@ -125,15 +125,15 @@ class ControlPanel extends StatelessWidget {
             child: RotatedBox(
               quarterTurns: 1,
               child: Slider(
-                value: context.watch<WeatherViewModel>().hourValue,
+                value: context.watch<WeatherViewModel>().activeHour,
                 min: 0.0,
                 max: 24.0,
                 divisions: 24,
                 onChanged: (value) {
-                  context.read<WeatherViewModel>().setTimeValue(value);
+                  context.read<WeatherViewModel>().setActiveHour(value);
                 },
                 onChangeEnd: (value) {
-                  context.read<WeatherViewModel>().setSelectedTime();
+                  context.read<WeatherViewModel>().setActiveData();
                 },
               ),
             ),

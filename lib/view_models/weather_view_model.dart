@@ -7,18 +7,18 @@ import '../models/user_error.dart';
 import '../models/weathers.dart';
 
 class WeatherViewModel extends ChangeNotifier {
-  var _onLoading = false;
-  var _hourValue = 0.0;
-  var _selectedDays = <Data>[];
-  Data? _selectedHour;
-  Weathers? _weathers;
+  bool _onLoading = false;
+  Forecast? _forecast;
+  List<Data> _activeDatas = [];
+  Data? _activeData;
+  double _activeHour = 0.0;
   UserError? _userError;
 
   bool get onLoading => _onLoading;
-  double get hourValue => _hourValue;
-  Weathers? get weathers => _weathers;
-  List<Data> get seletedDays => _selectedDays;
-  Data? get selectedTime => _selectedHour;
+  Forecast? get forecast => _forecast;
+  List<Data> get activeDatas => _activeDatas;
+  Data? get activeData => _activeData;
+  double get activeHour => _activeHour;
   UserError? get userError => _userError;
 
   WeatherViewModel() {
@@ -30,41 +30,41 @@ class WeatherViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  setWeather(Weathers value) {
-    _weathers = value;
+  setWeather(Forecast value) {
+    _forecast = value;
   }
 
-  setSelectedDays(DateTime date) {
-    final unfilteredDays = weathers?.datas;
+  setActiveDatas(DateTime date) {
+    final unfilteredDays = forecast?.datas;
     if (unfilteredDays != null) {
-      _selectedDays = List<Data>.from(unfilteredDays.where((data) {
+      _activeDatas = List<Data>.from(unfilteredDays.where((data) {
         return data.dt.day == date.day;
       }));
     }
-    _selectedHour = seletedDays[0];
+    _activeData = activeDatas[0];
   }
 
-  setSelectedTime() {
-    if (_selectedDays.isNotEmpty) {
-      final closestDay = _selectedDays
-          .where((day) => day.dt.hour <= _hourValue)
+  setActiveData() {
+    if (_activeDatas.isNotEmpty) {
+      final closestDay = _activeDatas
+          .where((day) => day.dt.hour <= _activeHour)
           .map(((e) => e.dt.hour))
           .toList()
         ..sort();
       if (closestDay.isNotEmpty) {
-        _selectedHour = _selectedDays
+        _activeData = _activeDatas
             .firstWhereOrNull((data) => data.dt.hour == closestDay.last);
       } else {
-        _selectedHour = _selectedDays.first;
+        _activeData = _activeDatas.first;
       }
     } else {
-      _selectedHour = _selectedDays.first;
+      _activeData = _activeDatas.first;
     }
     notifyListeners();
   }
 
-  setTimeValue(double value) {
-    _hourValue = value;
+  setActiveHour(double value) {
+    _activeHour = value;
     notifyListeners();
   }
 
@@ -74,10 +74,10 @@ class WeatherViewModel extends ChangeNotifier {
 
   getWeather() async {
     setLoading(true);
-    var response = await WeatherService.getWeather('pringsewu');
+    final response = await WeatherService.getWeather('pringsewu');
     if (response is Success) {
-      setWeather(response.response as Weathers);
-      setSelectedDays(DateTime.now());
+      setWeather(response.response as Forecast);
+      setActiveDatas(DateTime.now());
     }
     if (response is Failure) {
       var err = UserError(response.cod, response.errorResponse as String);
