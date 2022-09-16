@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:weather_or_note/models/weather.dart';
+import 'package:weather_or_note/models/weathers.dart';
 import 'package:weather_or_note/repository/api_status.dart';
 
 import '../utils/constant.dart';
@@ -9,7 +9,8 @@ import '../utils/constant.dart';
 class WeatherService {
   static Future<Object> getWeather(String location) async {
     try {
-      var url = Uri.parse('$uri/forecast?q=$location&appid=$appid');
+      var url =
+          Uri.parse('$uri/forecast?q=$location&units=metric&appid=$appid');
       var response = await http.get(url);
 
       if (response.statusCode == 200) {

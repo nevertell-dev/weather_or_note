@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:weather_or_note/repository/api_status.dart';
 import 'package:weather_or_note/repository/weather_service.dart';
+import 'package:collection/collection.dart';
 
 import '../models/user_error.dart';
-import '../models/weather.dart';
+import '../models/weathers.dart';
 
 class WeatherViewModel extends ChangeNotifier {
-  bool _onLoading = false;
+  var _onLoading = false;
+  var _hourValue = 0.0;
+  var _selectedDays = <Data>[];
+  Data? _selectedHour;
   Weathers? _weathers;
   UserError? _userError;
 
   bool get onLoading => _onLoading;
+  double get hourValue => _hourValue;
   Weathers? get weathers => _weathers;
+  List<Data> get seletedDays => _selectedDays;
+  Data? get selectedTime => _selectedHour;
   UserError? get userError => _userError;
 
   WeatherViewModel() {
@@ -25,6 +32,43 @@ class WeatherViewModel extends ChangeNotifier {
 
   setWeather(Weathers value) {
     _weathers = value;
+  }
+
+  setSelectedDays(DateTime date) {
+    final unfilteredDays = weathers?.datas;
+    if (unfilteredDays != null) {
+      _selectedDays = List<Data>.from(unfilteredDays.where((data) {
+        return data.dt.day == date.day;
+      }));
+    }
+    seletedDays.forEach((element) {
+      print(element.dt.hour);
+    });
+    _selectedHour = seletedDays[0];
+  }
+
+  setSelectedTime() {
+    if (_selectedDays.isNotEmpty) {
+      final closestDay = _selectedDays
+          .where((day) => day.dt.hour <= _hourValue)
+          .map(((e) => e.dt.hour))
+          .toList()
+        ..sort();
+      if (closestDay.isNotEmpty) {
+        _selectedHour = _selectedDays
+            .firstWhereOrNull((data) => data.dt.hour == closestDay.last);
+      } else {
+        _selectedHour = _selectedDays.first;
+      }
+    } else {
+      _selectedHour = _selectedDays.first;
+    }
+    notifyListeners();
+  }
+
+  setTimeValue(double value) {
+    _hourValue = value;
+    notifyListeners();
   }
 
   setUserError(UserError value) {
@@ -41,8 +85,7 @@ class WeatherViewModel extends ChangeNotifier {
       var err = UserError(response.cod, response.errorResponse as String);
       setUserError(err);
     }
-    // TODO: delete later
-    await Future.delayed(const Duration(seconds: 5));
+    setSelectedDays(DateTime.now());
     setLoading(false);
   }
 }
