@@ -13,27 +13,28 @@ class HomeSuccessView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Stack(
-      fit: StackFit.expand,
-      children: [
-        Image.asset(
-          'assets/images/WeatherIllustration.png',
-          fit: BoxFit.cover,
-        ),
-        Row(
-          children: const [
-            Expanded(
-              flex: 3,
-              child: WeatherPanel(),
-            ),
-            Expanded(
-              flex: 1,
-              child: ControlPanel(),
-            ),
-          ],
-        ),
-      ],
-    ));
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/WeatherIllustration.png',
+            fit: BoxFit.cover,
+          ),
+          Row(
+            children: const [
+              Expanded(
+                flex: 3,
+                child: WeatherPanel(),
+              ),
+              Expanded(
+                flex: 1,
+                child: ControlPanel(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
