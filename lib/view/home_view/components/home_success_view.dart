@@ -43,9 +43,9 @@ class WeatherPanel extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  TextStyle? headlineTextStyle(ThemeData theme) =>
+  TextStyle? headlineTextStyle(ThemeData theme, Color color) =>
       theme.textTheme.headline1?.copyWith(
-        color: theme.colorScheme.onSurface,
+        color: color,
         fontWeight: FontWeight.bold,
       );
 
@@ -56,21 +56,20 @@ class WeatherPanel extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Selector<WeatherViewModel, Data?>(
         selector: (_, weatherVM) => weatherVM.activeData,
-        builder: (context, selectedTime, child) {
+        builder: (context, activeData, __) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               FittedBox(
                 child: Text(
                   context.select((WeatherViewModel weatherVM) =>
-                          weatherVM.forecast?.city.name) ??
-                      '',
+                      weatherVM.forecast?.city.name ?? ''),
                   textAlign: TextAlign.center,
-                  style: headlineTextStyle(theme),
+                  style: headlineTextStyle(theme, theme.colorScheme.background),
                 ),
               ),
               Text(
-                selectedTime?.weathers[0].description ?? '',
+                activeData?.weathers[0].description ?? '',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: theme.colorScheme.background,
@@ -78,9 +77,9 @@ class WeatherPanel extends StatelessWidget {
               ),
               const Expanded(child: SizedBox.expand()),
               Text(
-                selectedTime?.main.temp.round().toString() ?? '',
+                activeData?.main.temp.round().toString() ?? '',
                 textAlign: TextAlign.right,
-                style: headlineTextStyle(theme),
+                style: headlineTextStyle(theme, theme.colorScheme.onSurface),
               ),
             ],
           );
@@ -97,7 +96,9 @@ class ControlPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = context.watch<WeatherViewModel>().forecast!.datas[0].dt;
+    final activeDate =
+        context.select((WeatherViewModel weatherVM) => weatherVM.activeDate);
+    final readWeatherVM = context.read<WeatherViewModel>();
     return Container(
       color: Theme.of(context).colorScheme.background,
       padding: const EdgeInsets.all(16.0),
@@ -113,10 +114,20 @@ class ControlPanel extends StatelessWidget {
           SizedBox.square(
             dimension: 96.0,
             child: IconButton(
-              onPressed: () {},
+              onPressed: () async {
+                final pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: activeDate,
+                  firstDate: DateTime(activeDate.year),
+                  lastDate: DateTime(activeDate.year + 1),
+                );
+                if (pickedDate != null) {
+                  readWeatherVM.setActiveDate(pickedDate);
+                }
+              },
               icon: Center(
                 child: Text(
-                  DateFormat('d\nMM').format(date),
+                  DateFormat('d\nMM').format(activeDate),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headline4,
                 ),
@@ -132,10 +143,10 @@ class ControlPanel extends StatelessWidget {
                 max: 24.0,
                 divisions: 24,
                 onChanged: (value) {
-                  context.read<WeatherViewModel>().setActiveHour(value);
+                  readWeatherVM.setActiveHour(value);
                 },
                 onChangeEnd: (value) {
-                  context.read<WeatherViewModel>().setActiveData();
+                  readWeatherVM.setActiveData();
                 },
               ),
             ),

@@ -11,6 +11,7 @@ class WeatherViewModel extends ChangeNotifier {
   Forecast? _forecast;
   List<Data> _activeDatas = [];
   Data? _activeData;
+  DateTime _activeDate = DateTime.now();
   double _activeHour = 0.0;
   UserError? _userError;
 
@@ -18,6 +19,7 @@ class WeatherViewModel extends ChangeNotifier {
   Forecast? get forecast => _forecast;
   List<Data> get activeDatas => _activeDatas;
   Data? get activeData => _activeData;
+  DateTime get activeDate => _activeDate;
   double get activeHour => _activeHour;
   UserError? get userError => _userError;
 
@@ -25,26 +27,30 @@ class WeatherViewModel extends ChangeNotifier {
     getWeather();
   }
 
-  setLoading(bool value) async {
-    _onLoading = value;
+  setLoading(bool state) async {
+    _onLoading = state;
     notifyListeners();
   }
 
-  setWeather(Forecast value) {
-    _forecast = value;
+  setWeather(Forecast forecast) {
+    _forecast = forecast;
   }
 
   setActiveDatas(DateTime date) {
     final unfilteredDays = forecast?.datas;
     if (unfilteredDays != null) {
       _activeDatas = List<Data>.from(unfilteredDays.where((data) {
-        return data.dt.day == date.day;
+        return data.dt.month == date.month && data.dt.day == date.day;
       }));
     }
-    _activeData = activeDatas[0];
+
+    _activeHour = date.isAtSameMomentAs(DateTime.now())
+        ? DateTime.now().hour.toDouble()
+        : 0.0;
+    setActiveData();
   }
 
-  setActiveData() {
+  setActiveData() async {
     if (_activeDatas.isNotEmpty) {
       final closestDay = _activeDatas
           .where((day) => day.dt.hour <= _activeHour)
@@ -58,18 +64,23 @@ class WeatherViewModel extends ChangeNotifier {
         _activeData = _activeDatas.first;
       }
     } else {
-      _activeData = _activeDatas.first;
+      _activeData = null;
     }
     notifyListeners();
   }
 
-  setActiveHour(double value) {
-    _activeHour = value;
+  setActiveDate(DateTime date) {
+    _activeDate = date;
+    setActiveDatas(date);
+  }
+
+  setActiveHour(double hour) {
+    _activeHour = hour;
     notifyListeners();
   }
 
-  setUserError(UserError value) {
-    _userError = value;
+  setUserError(UserError error) {
+    _userError = error;
   }
 
   getWeather() async {
