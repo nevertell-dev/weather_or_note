@@ -12,7 +12,28 @@ class HomeSuccessView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(child: WeatherPanel());
+    return SafeArea(
+        child: Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset(
+          'assets/images/WeatherIllustration.png',
+          fit: BoxFit.cover,
+        ),
+        Row(
+          children: const [
+            Expanded(
+              flex: 3,
+              child: WeatherPanel(),
+            ),
+            Expanded(
+              flex: 1,
+              child: ControlPanel(),
+            ),
+          ],
+        ),
+      ],
+    ));
   }
 }
 
@@ -21,69 +42,49 @@ class WeatherPanel extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+  TextStyle? headlineTextStyle(ThemeData theme) =>
+      theme.textTheme.headline1?.copyWith(
+        color: theme.colorScheme.onSurface,
+        fontWeight: FontWeight.bold,
+      );
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Image.asset(
-          'assets/images/WeatherIllustration.png',
-          fit: BoxFit.cover,
-        ),
-        Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Selector<WeatherViewModel, Data?>(
-                  selector: (_, weatherVM) => weatherVM.activeData,
-                  builder: (context, selectedTime, child) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        FittedBox(
-                          child: Text(
-                            context.select((WeatherViewModel weatherVM) =>
-                                    weatherVM.forecast?.city.name) ??
-                                '',
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.headline1?.copyWith(
-                              color: theme.colorScheme.background,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          selectedTime?.weathers[0].description ?? '',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: theme.colorScheme.background,
-                          ),
-                        ),
-                        const Expanded(child: SizedBox.expand()),
-                        Text(
-                          selectedTime?.main.temp.round().toString() ?? '',
-                          textAlign: TextAlign.right,
-                          style: theme.textTheme.headline1?.copyWith(
-                            color: theme.colorScheme.onSurface,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Selector<WeatherViewModel, Data?>(
+        selector: (_, weatherVM) => weatherVM.activeData,
+        builder: (context, selectedTime, child) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FittedBox(
+                child: Text(
+                  context.select((WeatherViewModel weatherVM) =>
+                          weatherVM.forecast?.city.name) ??
+                      '',
+                  textAlign: TextAlign.center,
+                  style: headlineTextStyle(theme),
                 ),
               ),
-            ),
-            const Expanded(
-              flex: 1,
-              child: ControlPanel(),
-            )
-          ],
-        )
-      ],
+              Text(
+                selectedTime?.weathers[0].description ?? '',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: theme.colorScheme.background,
+                ),
+              ),
+              const Expanded(child: SizedBox.expand()),
+              Text(
+                selectedTime?.main.temp.round().toString() ?? '',
+                textAlign: TextAlign.right,
+                style: headlineTextStyle(theme),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
