@@ -12,7 +12,7 @@ class HomeSuccessView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const WeatherPanel();
+    return const SafeArea(child: WeatherPanel());
   }
 }
 
@@ -37,43 +37,44 @@ class WeatherPanel extends StatelessWidget {
               flex: 3,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Consumer<WeatherViewModel>(
-                    builder: (context, weatherVM, child) {
-                  Data? selectedTime = weatherVM.selectedTime;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        weatherVM.weathers!.city.name,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.headline1?.copyWith(
-                          color: theme.colorScheme.background,
-                          fontWeight: FontWeight.bold,
+                child: Selector<WeatherViewModel, Data?>(
+                  selector: (_, weatherVM) => weatherVM.selectedTime,
+                  builder: (context, selectedTime, child) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        FittedBox(
+                          child: Text(
+                            context.select((WeatherViewModel weatherVM) =>
+                                    weatherVM.weathers?.city.name) ??
+                                '',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.headline1?.copyWith(
+                              color: theme.colorScheme.background,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
-                      Text(
-                        selectedTime?.weather[0].description ?? '',
-                        // ? selectedTime.weather[0].description
-                        // : '',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: theme.colorScheme.background,
+                        Text(
+                          selectedTime?.weather[0].description ?? '',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: theme.colorScheme.background,
+                          ),
                         ),
-                      ),
-                      const Expanded(child: SizedBox.expand()),
-                      Text(
-                        selectedTime?.main.temp.round().toString() ?? '',
-                        // ? selectedTime.main.temp.round().toString()
-                        // : '',
-                        textAlign: TextAlign.right,
-                        style: theme.textTheme.headline1?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
+                        const Expanded(child: SizedBox.expand()),
+                        Text(
+                          selectedTime?.main.temp.round().toString() ?? '',
+                          textAlign: TextAlign.right,
+                          style: theme.textTheme.headline1?.copyWith(
+                            color: theme.colorScheme.onSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                }),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
             const Expanded(
@@ -94,8 +95,7 @@ class ControlPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final weatherViewModel = context.watch<WeatherViewModel>();
-    final date = weatherViewModel.weathers!.datas[0].dt;
+    final date = context.watch<WeatherViewModel>().weathers!.datas[0].dt;
     return Container(
       color: Theme.of(context).colorScheme.background,
       padding: const EdgeInsets.all(16.0),
@@ -125,15 +125,15 @@ class ControlPanel extends StatelessWidget {
             child: RotatedBox(
               quarterTurns: 1,
               child: Slider(
-                value: weatherViewModel.hourValue,
+                value: context.watch<WeatherViewModel>().hourValue,
                 min: 0.0,
                 max: 24.0,
                 divisions: 24,
                 onChanged: (value) {
-                  weatherViewModel.setTimeValue(value);
+                  context.read<WeatherViewModel>().setTimeValue(value);
                 },
                 onChangeEnd: (value) {
-                  weatherViewModel.setSelectedTime();
+                  context.read<WeatherViewModel>().setSelectedTime();
                 },
               ),
             ),

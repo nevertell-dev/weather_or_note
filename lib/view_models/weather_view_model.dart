@@ -41,9 +41,6 @@ class WeatherViewModel extends ChangeNotifier {
         return data.dt.day == date.day;
       }));
     }
-    seletedDays.forEach((element) {
-      print(element.dt.hour);
-    });
     _selectedHour = seletedDays[0];
   }
 
@@ -80,12 +77,12 @@ class WeatherViewModel extends ChangeNotifier {
     var response = await WeatherService.getWeather('pringsewu');
     if (response is Success) {
       setWeather(response.response as Weathers);
+      setSelectedDays(DateTime.now());
     }
     if (response is Failure) {
       var err = UserError(response.cod, response.errorResponse as String);
       setUserError(err);
     }
-    setSelectedDays(DateTime.now());
     setLoading(false);
   }
 }
