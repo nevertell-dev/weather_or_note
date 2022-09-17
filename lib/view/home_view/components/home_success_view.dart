@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:weather_or_note/view/home_view/components/home_error_view.dart';
+import 'package:weather_or_note/view/home_view/components/home_loading_view.dart';
 
 import '../../../models/weathers.dart';
 import '../../../view_models/weather_view_model.dart';
@@ -9,6 +11,19 @@ class HomeSuccessView extends StatelessWidget {
   const HomeSuccessView({
     Key? key,
   }) : super(key: key);
+
+  _child(BuildContext context) {
+    if (context.select((WeatherViewModel weatherVM) => weatherVM.onLoading)) {
+      return const HomeLoadingView();
+    }
+
+    if (context.select((WeatherViewModel weatherVM) => weatherVM.userError) !=
+        null) {
+      return const HomeErrorView();
+    }
+
+    return const WeatherPanel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +36,12 @@ class HomeSuccessView extends StatelessWidget {
             fit: BoxFit.cover,
           ),
           Row(
-            children: const [
+            children: [
               Expanded(
                 flex: 3,
-                child: WeatherPanel(),
+                child: _child(context),
               ),
-              Expanded(
+              const Expanded(
                 flex: 1,
                 child: ControlPanel(),
               ),
@@ -55,7 +70,7 @@ class WeatherPanel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Selector<WeatherViewModel, Data?>(
-        selector: (_, weatherVM) => weatherVM.activeData,
+        selector: (_, weatherVM) => weatherVM.activeHour,
         builder: (context, activeData, __) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -77,7 +92,9 @@ class WeatherPanel extends StatelessWidget {
               ),
               const Expanded(child: SizedBox.expand()),
               Text(
-                activeData?.main.temp.round().toString() ?? '',
+                activeData != null
+                    ? '${activeData.main.temp.round().toString()}°'
+                    : '',
                 textAlign: TextAlign.right,
                 style: headlineTextStyle(theme, theme.colorScheme.onSurface),
               ),
@@ -138,15 +155,15 @@ class ControlPanel extends StatelessWidget {
             child: RotatedBox(
               quarterTurns: 1,
               child: Slider(
-                value: context.watch<WeatherViewModel>().activeHour,
+                value: context.watch<WeatherViewModel>().sliderValue,
                 min: 0.0,
                 max: 24.0,
                 divisions: 24,
                 onChanged: (value) {
-                  readWeatherVM.setActiveHour(value);
+                  readWeatherVM.setSliderValue(value);
                 },
                 onChangeEnd: (value) {
-                  readWeatherVM.setActiveData();
+                  readWeatherVM.setActiveHour();
                 },
               ),
             ),

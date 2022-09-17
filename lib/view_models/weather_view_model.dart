@@ -6,21 +6,23 @@ import 'package:collection/collection.dart';
 import '../models/user_error.dart';
 import '../models/weathers.dart';
 
+//TODO fix naming
+
 class WeatherViewModel extends ChangeNotifier {
   bool _onLoading = false;
   Forecast? _forecast;
-  List<Data> _activeDatas = [];
-  Data? _activeData;
+  List<Data> _activeDay = [];
+  Data? _activeHour;
   DateTime _activeDate = DateTime.now();
-  double _activeHour = 0.0;
+  double _sliderValue = 0.0;
   UserError? _userError;
 
   bool get onLoading => _onLoading;
   Forecast? get forecast => _forecast;
-  List<Data> get activeDatas => _activeDatas;
-  Data? get activeData => _activeData;
+  List<Data> get activeDay => _activeDay;
+  Data? get activeHour => _activeHour;
   DateTime get activeDate => _activeDate;
-  double get activeHour => _activeHour;
+  double get sliderValue => _sliderValue;
   UserError? get userError => _userError;
 
   WeatherViewModel() {
@@ -36,46 +38,46 @@ class WeatherViewModel extends ChangeNotifier {
     _forecast = forecast;
   }
 
-  setActiveDatas(DateTime date) {
+  setActiveDay(DateTime date) {
     final unfilteredDays = forecast?.datas;
     if (unfilteredDays != null) {
-      _activeDatas = List<Data>.from(unfilteredDays.where((data) {
+      _activeDay = List<Data>.from(unfilteredDays.where((data) {
         return data.dt.month == date.month && data.dt.day == date.day;
       }));
     }
 
-    _activeHour = date.isAtSameMomentAs(DateTime.now())
+    _sliderValue = date.difference(DateTime.now()).inDays == 0
         ? DateTime.now().hour.toDouble()
         : 0.0;
-    setActiveData();
+    setActiveHour();
   }
 
-  setActiveData() async {
-    if (_activeDatas.isNotEmpty) {
-      final closestDay = _activeDatas
-          .where((day) => day.dt.hour <= _activeHour)
+  setActiveHour() async {
+    if (_activeDay.isNotEmpty) {
+      final closestDay = _activeDay
+          .where((day) => day.dt.hour <= _sliderValue)
           .map(((e) => e.dt.hour))
           .toList()
         ..sort();
       if (closestDay.isNotEmpty) {
-        _activeData = _activeDatas
+        _activeHour = _activeDay
             .firstWhereOrNull((data) => data.dt.hour == closestDay.last);
       } else {
-        _activeData = _activeDatas.first;
+        _activeHour = _activeDay.first;
       }
     } else {
-      _activeData = null;
+      _activeHour = null;
     }
     notifyListeners();
   }
 
   setActiveDate(DateTime date) {
     _activeDate = date;
-    setActiveDatas(date);
+    setActiveDay(date);
   }
 
-  setActiveHour(double hour) {
-    _activeHour = hour;
+  setSliderValue(double hour) {
+    _sliderValue = hour;
     notifyListeners();
   }
 
@@ -88,12 +90,13 @@ class WeatherViewModel extends ChangeNotifier {
     final response = await WeatherService.getWeather('pringsewu');
     if (response is Success) {
       setWeather(response.response as Forecast);
-      setActiveDatas(DateTime.now());
+      setActiveDay(DateTime.now());
     }
     if (response is Failure) {
       var err = UserError(response.cod, response.errorResponse as String);
       setUserError(err);
     }
+    await Future.delayed(const Duration(seconds: 3));
     setLoading(false);
   }
 }
