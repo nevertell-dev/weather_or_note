@@ -6,7 +6,9 @@ import 'package:collection/collection.dart';
 import '../models/user_error.dart';
 import '../models/weathers.dart';
 
-//TODO fix naming
+// activeDay contains activeHour(s) for 3 hour forecast
+// activeDay controlled by date picker
+// activeHour controlled by slider, and set with onChangedEnd
 
 class WeatherViewModel extends ChangeNotifier {
   bool _onLoading = false;
@@ -54,14 +56,14 @@ class WeatherViewModel extends ChangeNotifier {
 
   setActiveHour() async {
     if (_activeDay.isNotEmpty) {
-      final closestDay = _activeDay
+      final closestHours = _activeDay
           .where((day) => day.dt.hour <= _sliderValue)
           .map(((e) => e.dt.hour))
           .toList()
         ..sort();
-      if (closestDay.isNotEmpty) {
+      if (closestHours.isNotEmpty) {
         _activeHour = _activeDay
-            .firstWhereOrNull((data) => data.dt.hour == closestDay.last);
+            .firstWhereOrNull((hour) => hour.dt.hour == closestHours.last);
       } else {
         _activeHour = _activeDay.first;
       }
