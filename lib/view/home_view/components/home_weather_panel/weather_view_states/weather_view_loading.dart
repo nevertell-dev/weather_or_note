@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class HomeLoadingView extends StatelessWidget {
-  const HomeLoadingView({
+class WeatherViewLoading extends StatelessWidget {
+  const WeatherViewLoading({
     Key? key,
   }) : super(key: key);
 

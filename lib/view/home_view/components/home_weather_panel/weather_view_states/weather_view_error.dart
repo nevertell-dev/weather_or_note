@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../view_models/weather_view_model.dart';
+import '../../../../../view_models/weather_view_model.dart';
 
-class HomeErrorView extends StatelessWidget {
-  const HomeErrorView({
+class WeatherViewError extends StatelessWidget {
+  const WeatherViewError({
     Key? key,
   }) : super(key: key);
 
