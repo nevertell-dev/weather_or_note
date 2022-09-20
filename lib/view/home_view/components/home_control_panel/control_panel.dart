@@ -36,8 +36,8 @@ class ControlPanel extends StatelessWidget {
                 final pickedDate = await showDatePicker(
                   context: context,
                   initialDate: activeDate,
-                  firstDate: DateTime(activeDate.year),
-                  lastDate: DateTime(activeDate.year + 1),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2050),
                 );
                 if (pickedDate != null) {
                   readWeatherVM.setActiveDate(pickedDate);

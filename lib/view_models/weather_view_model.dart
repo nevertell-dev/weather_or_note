@@ -42,15 +42,13 @@ class WeatherViewModel extends ChangeNotifier {
 
   setActiveDay(DateTime date) {
     final unfilteredDays = forecast?.datas;
+
     if (unfilteredDays != null) {
       _activeDay = List<Data>.from(unfilteredDays.where((data) {
         return data.dt.month == date.month && data.dt.day == date.day;
       }));
     }
 
-    _sliderValue = date.difference(DateTime.now()).inDays == 0
-        ? DateTime.now().hour.toDouble()
-        : 0.0;
     setActiveHour();
   }
 
