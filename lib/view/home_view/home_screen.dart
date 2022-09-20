@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:weather_or_note/view/home_view/components/home_control_panel/control_view.dart';
-import 'package:weather_or_note/view/home_view/components/home_weather_panel/weather_view_states/weather_view_error.dart';
-import 'package:weather_or_note/view/home_view/components/home_weather_panel/weather_view_states/weather_view_loading.dart';
-import 'package:weather_or_note/view/home_view/components/home_weather_panel/weather_view_states/weather_view_success.dart';
+import 'package:weather_or_note/view/home_view/components/home_control_panel/control_panel.dart';
+import 'package:weather_or_note/view/home_view/components/home_weather_panel/weather_panel_states/weather_panel_error.dart';
+import 'package:weather_or_note/view/home_view/components/home_weather_panel/weather_panel_states/weather_panel_loading.dart';
+import 'package:weather_or_note/view/home_view/components/home_weather_panel/weather_panel_states/weather_panel_success.dart';
 
 import '../../view_models/weather_view_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  _child(BuildContext context) {
+  _getWeatherPanel(BuildContext context) {
     if (context.select((WeatherViewModel weatherVM) => weatherVM.onLoading)) {
-      return const WeatherViewLoading();
+      return const WeatherPanelLoading();
     }
 
     if (context.select((WeatherViewModel weatherVM) => weatherVM.userError) !=
         null) {
-      return const WeatherViewError();
+      return const WeatherPanelError();
     }
 
-    return const WeatherViewSuccess();
+    return const WeatherPanelSuccess();
   }
 
   @override
@@ -37,11 +37,11 @@ class HomeScreen extends StatelessWidget {
             children: [
               Expanded(
                 flex: 3,
-                child: _child(context),
+                child: _getWeatherPanel(context),
               ),
               const Expanded(
                 flex: 1,
-                child: ControlView(),
+                child: ControlPanel(),
               ),
             ],
           ),

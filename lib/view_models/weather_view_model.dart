@@ -98,7 +98,6 @@ class WeatherViewModel extends ChangeNotifier {
       var err = UserError(response.cod, response.errorResponse as String);
       setUserError(err);
     }
-    await Future.delayed(const Duration(seconds: 3));
     setLoading(false);
   }
 }

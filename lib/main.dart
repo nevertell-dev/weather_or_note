@@ -18,9 +18,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WeatherViewModel()),
       ],
       child: MaterialApp(
+        title: 'Weather or Note',
         theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
         darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-        home: const HomeScreen(),
+        home: const Scaffold(body: HomeScreen()),
       ),
     );
   }

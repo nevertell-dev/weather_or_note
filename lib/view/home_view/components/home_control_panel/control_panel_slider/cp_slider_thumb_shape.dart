@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class HourSliderThumbShape extends SliderComponentShape {
-  HourSliderThumbShape({
-    required this.buildContext,
-    required this.thumbHeight,
-    required this.thumbRadius,
+class CpSliderThumbShape extends SliderComponentShape {
+  CpSliderThumbShape(
+    this.buildContext,
+    this.thumbHeight, {
     this.min = 0,
     this.max = 24,
   });
 
   final BuildContext buildContext;
   final double thumbHeight;
-  final double thumbRadius;
   final int min;
   final int max;
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return Size(thumbHeight, thumbHeight);
+    return Size(thumbHeight * 2, thumbHeight);
   }
 
   @override
@@ -42,43 +40,45 @@ class HourSliderThumbShape extends SliderComponentShape {
       ..color = Theme.of(buildContext).colorScheme.primaryContainer
       ..style = PaintingStyle.fill;
 
-    final span = TextSpan(
+    final hour = getValue(value);
+
+    final textSpan = TextSpan(
+      text: '${hour < 10 ? '0$hour' : '$hour'}:00',
       style: GoogleFonts.workSans().copyWith(
-        fontSize: thumbRadius * .6,
+        fontSize: thumbHeight / 2 * .6,
         fontWeight: FontWeight.w700,
         color: Theme.of(buildContext)
             .colorScheme
             .primary, //Text Color of Value on Thumb
       ),
-      text: '${getValue(value)}:00',
     );
-
-    final tp = TextPainter(
-        text: span,
+    final textPainter = TextPainter(
+        text: textSpan,
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr);
 
-    tp.layout();
+    textPainter.layout();
 
     final textCenter = Offset(
-      center.dx - (tp.width / 2),
-      center.dy - (tp.height / 2),
+      center.dx - (textPainter.width / 2),
+      center.dy - (textPainter.height / 2),
     );
 
     final rRect = RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: center,
-          width: thumbHeight * 1.5,
-          height: thumbHeight,
-        ),
-        Radius.circular(thumbRadius));
+      Rect.fromCenter(
+        center: center,
+        width: thumbHeight * 2,
+        height: thumbHeight,
+      ),
+      Radius.circular(thumbHeight / 2),
+    );
 
     canvas.drawRRect(rRect, paint);
 
-    tp.paint(canvas, textCenter);
+    textPainter.paint(canvas, textCenter);
   }
 
-  String getValue(double value) {
-    return (min + (max - min) * value).round().toString();
+  int getValue(double value) {
+    return (min + (max - min) * value).round();
   }
 }

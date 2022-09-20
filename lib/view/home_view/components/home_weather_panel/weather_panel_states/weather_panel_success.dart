@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import '../../../../../../models/weathers.dart';
 import '../../../../../../view_models/weather_view_model.dart';
 
-class WeatherViewSuccess extends StatelessWidget {
-  const WeatherViewSuccess({
+class WeatherPanelSuccess extends StatelessWidget {
+  const WeatherPanelSuccess({
     Key? key,
   }) : super(key: key);
 
@@ -19,6 +19,15 @@ class WeatherViewSuccess extends StatelessWidget {
       fontSize: size,
     );
   }
+
+  String _getCity(BuildContext context) => context.select(
+      (WeatherViewModel weatherVM) => weatherVM.forecast?.city.name ?? '');
+
+  String _getDescription(Data? activeData) =>
+      activeData != null ? activeData.weathers[0].description : '';
+
+  String _getTemperature(Data? activeData) =>
+      activeData != null ? '${activeData.main.temp.round().toString()}°' : '';
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +42,7 @@ class WeatherViewSuccess extends StatelessWidget {
             children: [
               FittedBox(
                 child: Text(
-                  context.select((WeatherViewModel weatherVM) =>
-                      weatherVM.forecast?.city.name ?? ''),
+                  _getCity(context),
                   textAlign: TextAlign.center,
                   style: headlineTextStyle(
                     color: theme.colorScheme.onPrimary,
@@ -43,7 +51,7 @@ class WeatherViewSuccess extends StatelessWidget {
                 ),
               ),
               Text(
-                activeData?.weathers[0].description ?? '',
+                _getDescription(activeData),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.workSans().copyWith(
                   color: theme.colorScheme.onPrimary,
@@ -51,13 +59,11 @@ class WeatherViewSuccess extends StatelessWidget {
               ),
               const Expanded(child: SizedBox.expand()),
               Text(
-                activeData != null
-                    ? '${activeData.main.temp.round().toString()}°'
-                    : '',
+                _getTemperature(activeData),
                 textAlign: TextAlign.right,
                 style: headlineTextStyle(
                   color: theme.colorScheme.onSurface,
-                  size: 48,
+                  size: 64,
                 ),
               ),
             ],

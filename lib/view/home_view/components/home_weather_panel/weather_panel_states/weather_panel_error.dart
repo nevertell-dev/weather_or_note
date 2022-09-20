@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../../view_models/weather_view_model.dart';
 
-class WeatherViewError extends StatelessWidget {
-  const WeatherViewError({
+class WeatherPanelError extends StatelessWidget {
+  const WeatherPanelError({
     Key? key,
   }) : super(key: key);
 
