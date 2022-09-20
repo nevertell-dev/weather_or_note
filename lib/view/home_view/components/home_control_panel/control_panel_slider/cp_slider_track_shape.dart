@@ -26,9 +26,9 @@ class CpSliderTrackShape extends SliderTrackShape with BaseSliderTrackShape {
 
     final rRect = RRect.fromRectAndRadius(
         Rect.fromLTWH(
-          offset.dx - (thumbSize.width / 2),
+          offset.dx,
           offset.dy + (parentBox.size.height / 2) - (thumbSize.height / 2),
-          parentBox.size.width + thumbSize.width,
+          parentBox.size.width,
           thumbSize.height,
         ),
         radius);

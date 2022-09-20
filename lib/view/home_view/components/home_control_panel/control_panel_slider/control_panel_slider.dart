@@ -12,19 +12,27 @@ class ControlPanelSlider extends StatelessWidget {
   }) : super(key: key);
 
   final WeatherViewModel readWeatherVM;
+  final _thumbHeight = 50.0;
+  final _minSliderValue = 0.0;
+  final _maxSliderValue = 24.0;
 
   @override
   Widget build(BuildContext context) {
     return SliderTheme(
       data: const SliderThemeData().copyWith(
-        thumbShape: CpSliderThumbShape(context, 50.0),
+        thumbShape: CpSliderThumbShape(
+          context,
+          thumbHeight: _thumbHeight,
+          min: _minSliderValue,
+          max: _maxSliderValue,
+        ),
         trackShape: CpSliderTrackShape(context),
       ),
       child: Slider(
         value: context.watch<WeatherViewModel>().sliderValue,
-        min: 0.0,
-        max: 24.0,
-        divisions: 24,
+        min: _minSliderValue,
+        max: _maxSliderValue,
+        divisions: _maxSliderValue.toInt(),
         onChanged: (value) {
           readWeatherVM.setSliderValue(value);
         },

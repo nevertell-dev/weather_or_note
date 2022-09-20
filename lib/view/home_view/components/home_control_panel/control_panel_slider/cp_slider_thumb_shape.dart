@@ -3,16 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 
 class CpSliderThumbShape extends SliderComponentShape {
   CpSliderThumbShape(
-    this.buildContext,
-    this.thumbHeight, {
-    this.min = 0,
-    this.max = 24,
+    this.buildContext, {
+    required this.thumbHeight,
+    required this.min,
+    required this.max,
   });
 
   final BuildContext buildContext;
   final double thumbHeight;
-  final int min;
-  final int max;
+  final double min;
+  final double max;
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
