@@ -37,7 +37,7 @@ class ControlPanelSlider extends StatelessWidget {
           readWeatherVM.setSliderValue(value);
         },
         onChangeEnd: (value) {
-          readWeatherVM.setActiveHour();
+          readWeatherVM.setActiveHourData();
         },
       ),
     );

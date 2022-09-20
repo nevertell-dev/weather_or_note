@@ -35,7 +35,7 @@ class WeatherPanelSuccess extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Selector<WeatherViewModel, Data?>(
-        selector: (_, weatherVM) => weatherVM.activeHour,
+        selector: (_, weatherVM) => weatherVM.activeHourData,
         builder: (context, activeData, __) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

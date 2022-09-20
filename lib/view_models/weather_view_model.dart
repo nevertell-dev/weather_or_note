@@ -6,23 +6,21 @@ import 'package:collection/collection.dart';
 import '../models/user_error.dart';
 import '../models/weathers.dart';
 
-// activeDay contains activeHour(s) for 3 hour forecast
-// activeDay controlled by date picker
-// activeHour controlled by slider, and set with onChangedEnd
+// Forecast => List of Day => List of Hour
 
 class WeatherViewModel extends ChangeNotifier {
   bool _onLoading = false;
   Forecast? _forecast;
-  List<Data> _activeDay = [];
-  Data? _activeHour;
+  List<Data> _activeDayData = [];
+  Data? _activeHourData;
   DateTime _activeDate = DateTime.now();
   double _sliderValue = 0.0;
   UserError? _userError;
 
   bool get onLoading => _onLoading;
   Forecast? get forecast => _forecast;
-  List<Data> get activeDay => _activeDay;
-  Data? get activeHour => _activeHour;
+  List<Data> get activeDayData => _activeDayData;
+  Data? get activeHourData => _activeHourData;
   DateTime get activeDate => _activeDate;
   double get sliderValue => _sliderValue;
   UserError? get userError => _userError;
@@ -31,66 +29,72 @@ class WeatherViewModel extends ChangeNotifier {
     getWeather();
   }
 
-  setLoading(bool state) async {
+  void setLoading(bool state) async {
     _onLoading = state;
     notifyListeners();
   }
 
-  setWeather(Forecast forecast) {
+  void setForecastData(Forecast forecast) {
     _forecast = forecast;
   }
 
-  setActiveDay(DateTime date) {
+  // ActiveDate is a reference for calculating activeDayDatas
+  void setActiveDate(DateTime date) {
+    _activeDate = date;
+    setActiveDayData();
+  }
+
+  // activeDayData is forecast filtered on specific day
+  // it's contain list of hourly weather data
+  void setActiveDayData() {
+    if (_activeDate.difference(DateTime.now()).inDays == 0) {
+      _sliderValue = DateTime.now().hour.toDouble();
+    }
+
     final unfilteredDays = forecast?.datas;
 
     if (unfilteredDays != null) {
-      _activeDay = List<Data>.from(unfilteredDays.where((data) {
-        return data.dt.month == date.month && data.dt.day == date.day;
+      _activeDayData = List<Data>.from(unfilteredDays.where((data) {
+        return data.dt.year == _activeDate.year &&
+            data.dt.month == _activeDate.month &&
+            data.dt.day == _activeDate.day;
       }));
     }
 
-    setActiveHour();
+    setActiveHourData();
   }
 
-  setActiveHour() async {
-    if (_activeDay.isNotEmpty) {
-      final closestHours = _activeDay
-          .where((day) => day.dt.hour <= _sliderValue)
-          .map(((e) => e.dt.hour))
-          .toList()
-        ..sort();
-      if (closestHours.isNotEmpty) {
-        _activeHour = _activeDay
-            .firstWhereOrNull((hour) => hour.dt.hour == closestHours.last);
-      } else {
-        _activeHour = _activeDay.first;
-      }
-    } else {
-      _activeHour = null;
-    }
-    notifyListeners();
-  }
-
-  setActiveDate(DateTime date) {
-    _activeDate = date;
-    setActiveDay(date);
-  }
-
-  setSliderValue(double hour) {
+  // SliderValue is a reference for calculating activeHourData
+  void setSliderValue(double hour) {
     _sliderValue = hour;
     notifyListeners();
   }
 
-  setUserError(UserError error) {
+  // activeHourData is activeDayDatas filtered on specific hour
+  // it's contain a weather data
+  void setActiveHourData() async {
+    if (_activeDayData.isNotEmpty) {
+      final closestHours = _activeDayData
+        ..sort((a, b) => ((a.dt.hour - _sliderValue).abs())
+            .compareTo((b.dt.hour - _sliderValue).abs()));
+      _activeHourData = closestHours.firstOrNull;
+    } else {
+      _activeHourData = null;
+    }
+
+    notifyListeners();
+  }
+
+  void setUserError(UserError error) {
     _userError = error;
   }
 
-  getWeather() async {
+  void getWeather() async {
     setLoading(true);
     final response = await WeatherService.getWeather('pringsewu');
     if (response is Success) {
-      setWeather(response.response as Forecast);
-      setActiveDay(DateTime.now());
+      setForecastData(response.response as Forecast);
+      setActiveDate(DateTime.now());
     }
     if (response is Failure) {
       var err = UserError(response.cod, response.errorResponse as String);
