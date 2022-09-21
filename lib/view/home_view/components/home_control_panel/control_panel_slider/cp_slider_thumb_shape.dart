@@ -34,7 +34,7 @@ class CpSliderThumbShape extends SliderComponentShape {
     required double textScaleFactor,
     required Size sizeWithOverflow,
   }) {
-    final Canvas canvas = context.canvas;
+    final canvas = context.canvas;
 
     final paint = Paint()
       ..color = Theme.of(buildContext).colorScheme.primaryContainer

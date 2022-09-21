@@ -15,6 +15,7 @@ class WeatherViewModel extends ChangeNotifier {
   Data? _activeHourData;
   DateTime _activeDate = DateTime.now();
   double _sliderValue = 0.0;
+  Map<int, int> _hourlyWeather = {};
   UserError? _userError;
 
   bool get onLoading => _onLoading;
@@ -23,6 +24,7 @@ class WeatherViewModel extends ChangeNotifier {
   Data? get activeHourData => _activeHourData;
   DateTime get activeDate => _activeDate;
   double get sliderValue => _sliderValue;
+  Map<int, int> get hourlyWeather => _hourlyWeather;
   UserError? get userError => _userError;
 
   WeatherViewModel() {
@@ -61,6 +63,12 @@ class WeatherViewModel extends ChangeNotifier {
       }));
     }
 
+    _hourlyWeather.clear();
+
+    for (var weatherData in _activeDayData) {
+      _hourlyWeather[weatherData.dt.hour] = weatherData.weathers[0].id;
+    }
+    print(_hourlyWeather);
     setActiveHourData();
   }
 

@@ -5,6 +5,8 @@ class CpSliderTrackShape extends SliderTrackShape with BaseSliderTrackShape {
 
   final BuildContext buildContext;
 
+  var count = 0;
+
   @override
   void paint(
     PaintingContext context,
@@ -17,7 +19,7 @@ class CpSliderTrackShape extends SliderTrackShape with BaseSliderTrackShape {
     bool isDiscrete = false,
     required TextDirection textDirection,
   }) {
-    final Canvas canvas = context.canvas;
+    final canvas = context.canvas;
 
     final thumbSize =
         sliderTheme.thumbShape!.getPreferredSize(isEnabled, isDiscrete);
