@@ -63,7 +63,13 @@ class ControlPanel extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 25.0),
               child: RotatedBox(
                 quarterTurns: 3,
-                child: ControlPanelSlider(readWeatherVM: readWeatherVM),
+                child: HourSlider(
+                  barColor: Theme.of(context).colorScheme.primary,
+                  thumbColor: Theme.of(context).colorScheme.primaryContainer,
+                  thumbSize: 50.0,
+                  min: 0.0,
+                  max: 24.0,
+                ),
               ),
             ),
           ),
