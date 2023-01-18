@@ -1,6 +1,6 @@
 # weather_or_note
 
-A weather app with note fuctionality included.
+A weather app with note-taking fuctionality.
 
 ## Getting Started
 
