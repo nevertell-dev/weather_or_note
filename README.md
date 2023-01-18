@@ -1,6 +1,6 @@
 # weather_or_note
 
-A new Flutter project.
+A weather with note app included.
 
 ## Getting Started
 
