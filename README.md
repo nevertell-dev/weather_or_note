@@ -1,6 +1,6 @@
 # weather_or_note
 
-A weather with note app included.
+A weather app with note fuctionality included.
 
 ## Getting Started
 
